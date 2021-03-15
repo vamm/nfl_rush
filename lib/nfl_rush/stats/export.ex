@@ -23,11 +23,9 @@ defmodule NflRush.Stats.Export do
   @header_row @fields |> Enum.map(&to_string/1) |> Enum.join(";")
 
   def call(params) do
-    results = Stats.list(params)
-
-    results
+    params
+    |> Stats.list()
     |> Enum.map(&to_row/1)
-    |> Enum.map(&Enum.join(&1, ";"))
     |> make_csv()
   end
 
@@ -35,6 +33,7 @@ defmodule NflRush.Stats.Export do
     stats
     |> take_csv_fields()
     |> Enum.map(&to_string/1)
+    |> Enum.join(";")
   end
 
   defp take_csv_fields(stats) do
