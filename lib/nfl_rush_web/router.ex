@@ -17,11 +17,8 @@ defmodule NflRushWeb.Router do
   scope "/", NflRushWeb do
     pipe_through :browser
 
+    get "/export", StatsController, :export
+
     live "/", PageLive, :index
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", NflRushWeb do
-  #   pipe_through :api
-  # end
 end

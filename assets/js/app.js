@@ -13,12 +13,12 @@ import "../css/app.scss"
 //     import socket from "./socket"
 //
 import "phoenix_html"
-import {Socket} from "phoenix"
+import { Socket } from "phoenix"
 import NProgress from "nprogress"
-import {LiveSocket} from "phoenix_live_view"
+import { LiveSocket } from "phoenix_live_view"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken } })
 
 // Show progress bar on live navigation and form submits
 window.addEventListener("phx:page-loading-start", info => NProgress.start())
@@ -33,3 +33,18 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+// Tooltips
+const hintSpan = document.getElementById("hint");
+const ths = document.querySelectorAll("th");
+ths.forEach((elem) => {
+  const hintText = elem.getAttribute("tooltip");
+  if (hintText) {
+    elem.addEventListener("mouseover", event => {
+      hintSpan.innerText = hintText;
+    });
+
+    elem.addEventListener("mouseleave", event => {
+      hintSpan.innerText = "";
+    });
+  }
+});

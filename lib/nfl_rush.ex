@@ -1,9 +1,13 @@
 defmodule NflRush do
-  @moduledoc """
-  NflRush keeps the contexts that define your domain
-  and business logic.
+  alias NflRush.Stats
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-  """
+  defdelegate list_stats(params), to: Stats, as: :list
+  defdelegate export_stats(params), to: Stats, as: :export
+
+  def import_from_file(file_path) do
+    with {:ok, content} <- File.read(file_path),
+         {:ok, items} <- Jason.decode(content) do
+      Stats.import(items)
+    end
+  end
 end

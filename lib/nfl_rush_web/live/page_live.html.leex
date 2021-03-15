@@ -1,18 +1,15 @@
-<%# <section class="phx-hero">
-  <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %</h1>
-  <p>NFL Rush</p>
-</section> %>
-
-
-<form phx-change="suggest" phx-submit="search">
-  <input type="text" name="q" value="<%= @query %>" placeholder="Player name search" list="results" autocomplete="off"/>
-  <datalist id="results">
-    <%= for {app, _vsn} <- @results do %>
-      <option value="<%= app %>"><%= app %></option>
-    <% end %>
-  </datalist>
-  <%# <button type="submit" phx-disable-with="Searching...">Go to Hexdocs</button> %>
+<%= f = form_for @changeset, "#", phx_change: :list, phx_submit: :export, as: :list %>
+  <%= text_input f, :player_name, placeholder: "Player name search" %>
+  <%= select f, :order_by, %{
+        "Total Rushing Yards" => :total_rushing_yards,
+        "Longest Rush" => :longest_rush,
+        "Total Rushing Touchdowns" => :total_rushing_touchdowns
+       } %>
+  <%= select f, :order, [asc: "asc", desc: "desc"] %>
+  <%= submit "Download" %>
 </form>
+
+<span id="hint">Hint:</span>
 
 <table>
   <thead>
@@ -20,13 +17,14 @@
       <th>Player</th>
       <th>Team</th>
       <th>Position</th>
-      <th>Attempts per game</th>
-      <th>Attempts</th>
+      <th>Rushing Attempts per Game Avg</th>
+      <th>Rushing Attempts</th>
       <th>Yards</th>
       <th tooltip="Rushing Average Yards Per Attempt">Avg</th>
       <th tooltip="Rushing Yards Per Game">Yds/G</th>
       <th tooltip="Total Rushing Touchdowns">TD</th>
-      <th tooltip="Longest Rush -- a T represents a touchdown occurred">Lng</th>
+      <th tooltip="Longest Rush">Lng</th>
+      <th tooltip="Longest Rush">Touchdown in longest run?</th>
       <th tooltip="Rushing First Downs">1st</th>
       <th tooltip="Rushing First Down Percentage">1st%</th>
       <th tooltip="Rushing 20+ Yards Each">20+</th>
@@ -35,56 +33,25 @@
     </tr>
   </thead>
   <tbody>
+    <%= for player_stats <- @stats do %>
     <tr>
-      <td>Vicente</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
-      <td>0</td>
+      <td><%= player_stats.player_name %></td>
+      <td><%= player_stats.team %></td>
+      <td><%= player_stats.position %></td>
+      <td><%= player_stats.rushing_attempts_per_game_avg %></td>
+      <td><%= player_stats.rushing_attempts %></td>
+      <td><%= player_stats.total_rushing_yards %></td>
+      <td><%= player_stats.rushing_avg_yards_per_attempt %></td>
+      <td><%= player_stats.rushing_yards_per_game %></td>
+      <td><%= player_stats.total_rushing_touchdowns %></td>
+      <td><%= player_stats.longest_rush %></td>
+      <td><%= player_stats.longest_rush_touchdown? %></td>
+      <td><%= player_stats.rushing_first_downs %></td>
+      <td><%= player_stats.rushing_first_downs_percentage %></td>
+      <td><%= player_stats.rushing_20_plus_yards_each %></td>
+      <td><%= player_stats.rushing_20_plus_yards_each %></td>
+      <td><%= player_stats.rushing_fumbles %></td>
     </tr>
+    <% end %>
   </tbody>
 </table>
-<%#
-<section class="row">
-  <article class="column">
-    <h2>Resources</h2>
-    <ul>
-      <li>
-        <a href="https://hexdocs.pm/phoenix/overview.html">Guides &amp; Docs</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix">Source</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix/blob/v1.5/CHANGELOG.md">v1.5 Changelog</a>
-      </li>
-    </ul>
-  </article>
-  <article class="column">
-    <h2>Help</h2>
-    <ul>
-      <li>
-        <a href="https://elixirforum.com/c/phoenix-forum">Forum</a>
-      </li>
-      <li>
-        <a href="https://webchat.freenode.net/?channels=elixir-lang">#elixir-lang on Freenode IRC</a>
-      </li>
-      <li>
-        <a href="https://twitter.com/elixirphoenix">Twitter @elixirphoenix</a>
-      </li>
-      <li>
-        <a href="https://elixir-slackin.herokuapp.com/">Elixir on Slack</a>
-      </li>
-    </ul>
-  </article>
-</section> %>

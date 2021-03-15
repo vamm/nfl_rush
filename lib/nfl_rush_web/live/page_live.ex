@@ -2,39 +2,32 @@ defmodule NflRushWeb.PageLive do
   use NflRushWeb, :live_view
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, query: "", results: %{})}
+  def mount(params, _session, socket) do
+    {:ok,
+     assign(socket,
+       changeset: changeset(params),
+       params: %{},
+       stats: NflRush.list_stats(%{})
+     )}
   end
 
   @impl true
-  def handle_event("suggest", %{"q" => query}, socket) do
-    IO.inspect(query, label: :searched_for)
-    {:noreply, assign(socket, results: search(query), query: query)}
+  def handle_event("list", %{"list" => params}, socket) do
+    updated_params = update_params(socket.assigns.params, params)
+    results = NflRush.list_stats(updated_params)
+
+    {:noreply,
+     assign(socket, stats: results, params: updated_params, changeset: changeset(updated_params))}
   end
 
   @impl true
-  def handle_event("search", %{"q" => query}, socket) do
-    case search(query) do
-      %{^query => vsn} ->
-        {:noreply, redirect(socket, external: "https://hexdocs.pm/#{query}/#{vsn}")}
-
-      _ ->
-        {:noreply,
-         socket
-         |> put_flash(:error, "No dependencies found matching \"#{query}\"")
-         |> assign(results: %{}, query: query)}
-    end
+  def handle_event("export", %{}, socket) do
+    {:noreply, redirect(socket, to: Routes.stats_path(socket, :export, socket.assigns.params))}
   end
 
-  defp search(query) do
-    if not NflRushWeb.Endpoint.config(:code_reloader) do
-      raise "action disabled when not in development"
-    end
+  defp update_params(params, new_params), do: Map.merge(params, new_params)
 
-    for {app, desc, vsn} <- Application.started_applications(),
-        app = to_string(app),
-        String.starts_with?(app, query) and not List.starts_with?(desc, ~c"ERTS"),
-        into: %{},
-        do: {app, vsn}
+  defp changeset(attrs) do
+    Ecto.Changeset.cast({%{}, %{order_by: :string, order: :string}}, attrs, [:order_by, :order])
   end
 end
