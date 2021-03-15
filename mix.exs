@@ -5,7 +5,7 @@ defmodule NflRush.MixProject do
     [
       app: :nfl_rush,
       version: "0.1.0",
-      elixir: "~> 1.7",
+      elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -26,7 +26,7 @@ defmodule NflRush.MixProject do
 
   defp deps do
     [
-      {:credo, "~> 1.5"},
+      {:credo, "~> 1.5", only: [:dev, :test]},
       {:ecto_sql, "~> 3.4"},
       {:floki, ">= 0.27.0", only: :test},
       {:gettext, "~> 0.11"},
